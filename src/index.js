@@ -28,13 +28,6 @@ app.use(checkForCookie("token"));
 app.use(express.static(path.resolve("./src/public")));
 
 // routes
-app.get("/", async (req, res) => {
-  const allBlogs = await Blog.find({});
-  return res.render("home", {
-    user: req.user,
-    blogs: allBlogs,
-  });
-});
 app.use("/", homeRoute);
 app.use("/blog", blogRoute);
 app.use("/profile", profileRoute);

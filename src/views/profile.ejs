@@ -61,7 +61,7 @@
     <div class="container mt-4">
         <!-- Profile Header -->
         <div class="profile-header">
-            <img src="<%= user.profileImageURL %>" alt="Profile Picture" class="profile-image">
+            <img src="<%= user.profileImageURL %>" class="profile-image" />
             <div class="user-info">
                 <h2><%= user.fullname %></h2>
                 <p><strong>Email:</strong> <%= user.email %></p>
@@ -73,7 +73,7 @@
         <!-- User's Blogs -->
         <h4 class="mb-3">My Blogs</h4>
         <% if (user.blogs.length === 0) { %>
-            <p>No blogs created yet. <a href="/blog/add">Write your first blog!</a></p>
+            <p>No blogs created yet. <a href="/blog/add-blog">Write your first blog!</a></p>
         <% } else { %>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 <% user.blogs.forEach(blog => { %>

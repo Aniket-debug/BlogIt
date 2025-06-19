@@ -7,7 +7,7 @@ router.get("/:id", async (req, res) => {
   const user = await User.findById(req.params.id).populate("blogs");
 
   return res.render("profile", {
-    user
+    user,
   });
 });
 

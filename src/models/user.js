@@ -7,11 +7,15 @@ const userSchema = new Schema(
     fullname: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
     },
     salt: {
       type: String,
@@ -27,15 +31,17 @@ const userSchema = new Schema(
     },
     profileImageURL: {
       type: String,
-      default: "/images/defaultPic.webp",
     },
-    blogs: {
-      type: [Schema.Types.ObjectId],
-      ref: "blog",
-    },
+    blogs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "blog",
+      },
+    ],
   },
   { timestamps: true }
 );
+
 
 userSchema.pre("save", function (next) {
   const user = this;

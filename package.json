@@ -2,10 +2,10 @@
   "name": "blogit",
   "version": "1.0.0",
   "description": "A basic learning backend project",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
   },
   "author": "Aniket Agarwal",
   "license": "ISC",
@@ -13,7 +13,11 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "mongoose": "^8.16.0"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.0",
+    "multer": "^2.0.1"
   }
 }

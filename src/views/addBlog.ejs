@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("./partials/head") %>
+    <title>HomePage</title>
+  </head>
+
+  <body>
+    <%- include("./partials/nav") %>
+    <form
+      action="/blog/add-blog"
+      method="POST"
+      enctype="multipart/form-data"
+      class="container mt-4 p-4 border rounded shadow-sm bg-light"
+    >
+      <h3 class="mb-4">Create New Blog Post</h3>
+
+      <!-- Blog Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label">Blog Title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          name="title"
+          placeholder="Enter your blog title"
+          required
+        />
+      </div>
+
+      <!-- Blog Content -->
+      <div class="mb-3">
+        <label for="content" class="form-label">Blog Content</label>
+        <textarea
+          class="form-control"
+          id="content"
+          name="content"
+          rows="8"
+          placeholder="Write your blog here..."
+          required
+        ></textarea>
+      </div>
+
+      <!-- Featured Image -->
+      <div class="mb-3">
+        <label for="image" class="form-label">Featured Image</label>
+        <input
+          class="form-control"
+          type="file"
+          id="image"
+          name="image"
+          accept="image/*"
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary">Publish Blog</button>
+    </form>
+
+    <%- include("./partials/scripts") %>
+  </body>
+</html>

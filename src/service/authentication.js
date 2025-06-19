@@ -1,5 +1,5 @@
 const JWT = require("jsonwebtoken");
-const { validate } = require("../models/user");
+// const { validate } = require("../models/user");
 
 const secret = "somethingThatCanNotBeGuessed";
 

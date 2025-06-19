@@ -29,6 +29,10 @@ const userSchema = new Schema(
       type: String,
       default: "/images/defaultPic.webp",
     },
+    blogs: {
+      type: [Schema.Types.ObjectId],
+      ref: "blog",
+    },
   },
   { timestamps: true }
 );

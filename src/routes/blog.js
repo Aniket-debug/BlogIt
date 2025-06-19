@@ -13,9 +13,9 @@ const storage = multer.diskStorage({
     const filename = `${Date.now()}-${file.originalname}`;
     cb(null, filename);
   },
-})
+});
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
 router
   .route("/add-blog")
@@ -25,36 +25,51 @@ router
     });
   })
   .post(upload.single("image"), async (req, res) => {
-    const {title, content} = req.body;
-    const blog = await Blog.create({
-      title,
-      content,
-      createdBy: req.user._id,
-      coverImageURL: `/uploads/${req.file.filename}`
-    })
-    return res.redirect(`/blog/${blog._id}`);
+    try {
+      const { title, content } = req.body;
+
+      // Create the blog
+      const blog = await Blog.create({
+        title,
+        content,
+        createdBy: req.user._id,
+        coverImageURL: `/uploads/${req.file.filename}`,
+      });
+
+      // Push blog._id to the user's blogs array
+      await User.findByIdAndUpdate(
+        req.user._id,
+        { $push: { blogs: blog._id } },
+        { new: true }
+      );
+
+      return res.redirect(`/blog/${blog._id}`);
+    } catch (error) {
+      console.error("Error while creating blog:", error);
+      return res.status(500).send("Something went wrong while adding the blog.");
+    }
   });
 
-router
-  .route("/:id")
-  .get(async (req, res) => {
-    const blog = await Blog.findById(req.params.id).populate('createdBy').populate('comments.createdBy');;
-    return res.render("blog", {
-      user: req.user,
-      blog,
-    });
-  });
 
-router.post('/:id/comments', async (req, res) => {
+router.route("/:id").get(async (req, res) => {
+  const blog = await Blog.findById(req.params.id)
+    .populate("createdBy")
+    .populate("comments.createdBy");
+  return res.render("blog", {
+    user: req.user,
+    blog,
+  });
+});
+
+router.post("/:id/comments", async (req, res) => {
   const blog = await Blog.findById(req.params.id);
   blog.comments.push({
     text: req.body.text,
     createdBy: req.user._id,
-    createdAt: new Date()
+    createdAt: new Date(),
   });
   await blog.save();
   res.redirect(`/blog/${req.params.id}`);
 });
-
 
 module.exports = router;

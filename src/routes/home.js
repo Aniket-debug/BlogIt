@@ -1,7 +1,10 @@
 const { Router } = require("express");
 const User = require("../models/user");
+const Blog = require("../models/blog");
 
 const router = Router();
+
+
 
 router
   .route("/signin")
@@ -12,9 +15,12 @@ router
     const { email, password } = req.body;
     try {
       const token = await User.matchUserAndReturnToken(email, password);
+      console.log(token);
       return res.cookie("token", token).redirect("/");
     } catch (error) {
-      return res.status(400).render("signin", {error:"Invalid email or password"});
+      return res
+        .status(400)
+        .render("signin", { error: "Invalid email or password" });
     }
   });
 
@@ -33,8 +39,8 @@ router
     return res.redirect("/signin");
   });
 
-router.get("/signout", (req, res)=>{
+router.get("/signout", (req, res) => {
   res.clearCookie("token").redirect("/");
-})
+});
 
 module.exports = router;

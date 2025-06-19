@@ -13,15 +13,24 @@ const blogSchema = new Schema(
     coverImageURL: {
       type: String,
     },
-    createdBy:{
-        type: Schema.Types.ObjectId,
-        ref: "user"
-    }
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+    comments: [
+      {
+        text: String,
+        createdAt: Date,
+        createdBy: {
+          type: Schema.Types.ObjectId,
+          ref: "user",
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-const Blog = model('blog', blogSchema);
+const Blog = model("blog", blogSchema);
 
 module.exports = Blog;
-

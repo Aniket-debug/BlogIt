@@ -30,7 +30,7 @@ router
       email,
       password,
     });
-    return res.redirect("/");
+    return res.redirect("/signin");
   });
 
 router.get("/signout", (req, res)=>{

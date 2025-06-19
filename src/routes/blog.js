@@ -35,4 +35,26 @@ router
     return res.redirect(`/blog/${blog._id}`);
   });
 
+router
+  .route("/:id")
+  .get(async (req, res) => {
+    const blog = await Blog.findById(req.params.id).populate('createdBy').populate('comments.createdBy');;
+    return res.render("blog", {
+      user: req.user,
+      blog,
+    });
+  });
+
+router.post('/:id/comments', async (req, res) => {
+  const blog = await Blog.findById(req.params.id);
+  blog.comments.push({
+    text: req.body.text,
+    createdBy: req.user._id,
+    createdAt: new Date()
+  });
+  await blog.save();
+  res.redirect(`/blog/${req.params.id}`);
+});
+
+
 module.exports = router;

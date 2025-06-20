@@ -4,6 +4,7 @@ const Blog = require("../models/blog");
 const multer = require("multer");
 const path = require("path");
 
+
 const router = Router();
 
 const storage = multer.diskStorage({
@@ -18,7 +19,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.get("/home", async (req, res) => {
+router.get("/", async (req, res) => {
   const allBlogs = await Blog.find({});
   return res.render("home", {
     user: req.user,
@@ -30,13 +31,14 @@ router.get("/home", async (req, res) => {
 router
   .route("/signin")
   .get(async (req, res) => {
-    return res.render("signin");
+    const msg = req.query.msg;
+    return res.render("signin", { msg });
   })
   .post(async (req, res) => {
     const { email, password } = req.body;
     try {
       const token = await User.matchUserAndReturnToken(email, password);
-      return res.cookie("token", token).redirect("/home");
+      return res.cookie("token", token).redirect("/");
     } catch (error) {
       return res
         .status(400)
@@ -61,11 +63,11 @@ router
       password,
       profileImageURL: userProfle
     });
-    return res.redirect("/signin");
+    return res.redirect("/signin?msg=Account%20created%20successfully%20please%20SignIn");
   });
 
 router.get("/signout", (req, res) => {
-  res.clearCookie("token").redirect("/home");
+  res.clearCookie("token").redirect("/");
 });
 
 module.exports = router;

@@ -7,7 +7,7 @@ const { checkForCookie } = require("./middlewares/authentication");
 const homeRoute = require("./routes/home");
 const blogRoute = require("./routes/blog");
 const profileRoute = require("./routes/profile");
-const Blog = require("./models/blog");
+const methodOverride = require('method-override');
 
 
 mongoose.connect(process.env.DB_URL).then((e) => {
@@ -22,6 +22,7 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve("./src/views"));
 
 // middlewares
+app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(checkForCookie("token"));

@@ -3,6 +3,7 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 const router = Router();
 
@@ -58,15 +59,51 @@ router
     }
   });
 
-router.route("/:id").get(async (req, res) => {
-  const blog = await Blog.findById(req.params.id)
-    .populate("createdBy")
-    .populate("comments.createdBy");
-  return res.render("blog", {
-    user: req.user,
-    blog,
+router
+  .route("/:id")
+  .get(async (req, res) => {
+    const blog = await Blog.findById(req.params.id)
+      .populate("createdBy")
+      .populate("comments.createdBy");
+    return res.render("blog", {
+      user: req.user,
+      blog,
+    });
+  })
+  .delete(async (req, res) => {
+    try {
+      const blogId = req.params.id;
+
+      // 1. Find the blog
+      const blog = await Blog.findById(blogId);
+      if (!blog) {
+        return res.status(404).send("Blog not found");
+      }
+
+      // 2. Remove blog reference from user's blogs array
+      const user = await User.findByIdAndUpdate(blog.createdBy, {
+        $pull: { blogs: blogId },
+      });
+
+      // 3. Delete the cover image file if it's not the default
+      const defaultImage = '/images/userAvatar.png';
+      if (blog.coverImageURL && blog.coverImageURL !== defaultImage) {
+        const imagePath = path.join("../public", blog.coverImageURL);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      }
+
+      // 4. Delete the blog
+      await Blog.findByIdAndDelete(blogId);
+
+      // 5. Redirect
+      res.redirect(`/profile/${user._id}`);
+    } catch (err) {
+      console.error("Error deleting blog:", err);
+      res.status(500).send("Server error while deleting blog");
+    }
   });
-});
 
 router.post("/:id/comments", async (req, res) => {
   const blog = await Blog.findById(req.params.id);

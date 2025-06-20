@@ -1,25 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <%- include("./partials/head") %>
-    <title><%= blog.title %> | Blog</title>
-  </head>
 
-  <body>
-    <%- include("./partials/nav") %>
+<head>
+  <%- include("./partials/head") %>
+    <style>
+      .blog-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .blog-card-img {
+        object-fit: cover;
+        height: 180px;
+        width: 100%;
+      }
+
+      .blog-card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .card-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+      }
+    </style>
+    <title>
+      <%= blog.title %> | Blog
+    </title>
+</head>
+
+<body>
+  <%- include("./partials/nav") %>
 
     <div class="container my-5">
       <div class="row justify-content-center">
         <div class="col-lg-10 col-md-12">
           <div class="card shadow-sm border-0">
-            <img
-              src="<%= blog.coverImageURL %>"
-              class="card-img-top img-fluid"
-              alt="Blog Cover Image"
-            />
+            <img src="<%= blog.coverImageURL %>" class="card-img-top img-fluid" alt="Blog Cover Image" />
 
             <div class="card-body">
-              <h1 class="card-title mb-3"><%= blog.title %></h1>
+              <h1 class="card-title mb-3">
+                <%= blog.title %>
+              </h1>
               <p class="text-muted">
                 Posted by
                 <strong>
@@ -35,93 +61,74 @@
               </div>
               <hr class="mt-5" />
               <h4 class="mb-3">Comments (<%= blog.comments.length %>)</h4>
-
               <!-- Comments List -->
               <% if (blog.comments && blog.comments.length> 0) { %>
-              <div class="list-group mb-4">
-                <% blog.comments.forEach(comment => { %>
-                <div class="list-group-item py-2 px-3 d-flex align-items-start">
-                  <!-- Profile Image -->
-                  <img
-                    src="<%= comment.createdBy?.profileImageURL %>"
-                    alt="User image"
-                    class="rounded-circle me-3"
-                    style="width: 40px; height: 40px; object-fit: cover"
-                  />
+                <div class="list-group mb-4">
+                  <% blog.comments.forEach(comment=> { %>
+                    <div class="list-group-item py-2 px-3 d-flex align-items-start">
+                      <!-- Profile Image -->
+                      <img src="<%= comment.createdBy?.profileImageURL %>" alt="User image" class="rounded-circle me-3"
+                        style="width: 40px; height: 40px; object-fit: cover" />
 
-                  <!-- Comment Content -->
-                  <div class="flex-grow-1">
-                    <p
-                      class="mb-1 small text-body"
-                      style="white-space: pre-wrap"
-                    >
-                      <%= comment.text %>
-                    </p>
-                    <small class="text-muted d-block text-end">
-                      — <%= comment.createdBy?.fullname || 'Anonymous' %>, <%=
-                      new Date(comment.createdAt).toLocaleDateString() %>
-                    </small>
-                  </div>
+                      <!-- Comment Content -->
+                      <div class="flex-grow-1">
+                        <p class="mb-1 small text-body" style="white-space: pre-wrap">
+                          <%= comment.text %>
+                        </p>
+                        <small class="text-muted d-block text-end">
+                          — <%= comment.createdBy?.fullname || 'Anonymous' %>, <%= new
+                              Date(comment.createdAt).toLocaleDateString() %>
+                        </small>
+                      </div>
+                    </div>
+                    <% }) %>
                 </div>
-                <% }) %>
-              </div>
+                    <% } else { %>
+                      <p class="text-muted">
+                        No comments yet. Be the first to comment!
+                      </p>
+                    <% } %>
 
-              <% } else { %>
-              <p class="text-muted">
-                No comments yet. Be the first to comment!
-              </p>
-              <% } %>
+                        <!-- Comment Form -->
+                        <% if (locals.user) { %>
+                          <form action="/blog/<%= blog._id %>/comments" method="POST" class="mt-4">
+                            <div class="mb-3">
+                              <label for="commentText" class="form-label">Leave a Comment</label>
+                              <textarea name="text" id="commentText" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                              Post Comment
+                            </button>
+                          </form>
 
-              <!-- Comment Form -->
-              <% if (locals.user) { %>
-              <form
-                action="/blog/<%= blog._id %>/comments"
-                method="POST"
-                class="mt-4"
-              >
-                <div class="mb-3">
-                  <label for="commentText" class="form-label"
-                    >Leave a Comment</label
-                  >
-                  <textarea
-                    name="text"
-                    id="commentText"
-                    class="form-control"
-                    rows="3"
-                    required
-                  ></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                  Post Comment
-                </button>
-              </form>
-              <% } else { %>
-              <p class="text-muted mt-3">
-                Please <a href="/signin">signin</a> to post a comment.
-              </p>
-              <% } %>
+                          <% } else { %>
+                            <p class="text-muted mt-3">
+                              Please <a href="/signin">signin</a> to post a comment.
+                            </p>
+                          <% } %>
+                    <% if (user && blog.createdBy && String(user._id) === String(blog.createdBy._id)) { %>
+                      <form action="/blog/<%= blog._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this blog?');">
+                        <button type="submit" class="btn btn-danger btn-sm mt-2">Delete</button>
+                      </form>
+                    <% } %>
             </div>
           </div>
 
-          <% if (user && user._id.toString()===blog.author?._id?.toString()) {
-          %>
-          <div class="mt-4 d-flex justify-content-end gap-2">
-            <a
-              href="/blogs/<%= blog._id %>/edit"
-              class="btn btn-outline-primary"
-              >Edit</a
-            >
-            <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST">
-              <button type="submit" class="btn btn-outline-danger">
-                Delete
-              </button>
-            </form>
-          </div>
-          <% } %>
+          <% if (user && user._id.toString()===blog.author?._id?.toString()) { %>
+            <div class="mt-4 d-flex justify-content-end gap-2">
+              <a href="/blogs/<%= blog._id %>/edit" class="btn btn-outline-primary">Edit</a>
+              <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-outline-danger">
+                  Delete
+                </button>
+              </form>
+            </div>
+            <% } %>
         </div>
       </div>
     </div>
 
     <%- include("./partials/scripts") %>
-  </body>
+</body>
+
 </html>

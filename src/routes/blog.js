@@ -22,9 +22,12 @@ const upload = multer({ storage: storage });
 router
   .route("/add-blog")
   .get(async (req, res) => {
-    return res.render("addBlog", {
-      user: req.user,
-    });
+    if (req.user) {
+      return res.render("addBlog", {
+        user: req.user,
+      });
+    }
+    return res.redirect("/");
   })
   .post(upload.single("cover-image"), async (req, res) => {
     try {
@@ -33,7 +36,7 @@ router
       // Set default cover image path if no file is uploaded
       const coverImagePath = req.file
         ? `/blogCoverImage/${req.file.filename}`
-        : `/images/userAvatar.png`;
+        : `/images/blogCoverImage.png`;
 
       // Create the blog
       const blog = await Blog.create({
@@ -86,14 +89,22 @@ router
       });
 
       // 3. Delete the cover image file if it's not the default
-      const defaultImage = '/images/userAvatar.png';
+      const defaultImage = "/images/blogCoverImage.png";
       if (blog.coverImageURL && blog.coverImageURL !== defaultImage) {
-        const imagePath = path.join("../public", blog.coverImageURL);
+        // Resolve the full path to the image file
+        const imagePath = path.resolve(
+          __dirname,
+          "../public",
+          "." + blog.coverImageURL
+        );
+
         if (fs.existsSync(imagePath)) {
           fs.unlinkSync(imagePath);
+          console.log("Old image deleted:", imagePath);
+        } else {
+          console.warn("Image not found:", imagePath);
         }
       }
-
       // 4. Delete the blog
       await Blog.findByIdAndDelete(blogId);
 

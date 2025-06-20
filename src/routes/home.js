@@ -4,7 +4,6 @@ const Blog = require("../models/blog");
 const multer = require("multer");
 const path = require("path");
 
-
 const router = Router();
 
 const storage = multer.diskStorage({
@@ -27,12 +26,14 @@ router.get("/", async (req, res) => {
   });
 });
 
-
 router
   .route("/signin")
   .get(async (req, res) => {
-    const msg = req.query.msg;
-    return res.render("signin", { msg });
+    if (!req.user) {
+      const msg = req.query.msg;
+      return res.render("signin", { msg });
+    }
+    return res.redirect(`profile/${req.user._id}`);
   })
   .post(async (req, res) => {
     const { email, password } = req.body;
@@ -49,21 +50,27 @@ router
 router
   .route("/signup")
   .get(async (req, res) => {
-    return res.render("signup");
+    if (!req.user) {
+      const msg = req.query.msg;
+      return res.render("signup", { msg });
+    }
+    return res.redirect(`profile/${req.user._id}`);
   })
   .post(upload.single("profile-image"), async (req, res) => {
     const { fullname, email, password } = req.body;
     const userProfle = req.file
-        ? `/userProfile/${req.file.filename}`
-        : `/images/userAvatar.png`;
+      ? `/userProfile/${req.file.filename}`
+      : `/images/userAvatar.png`;
     console.log(req.file);
     const user = await User.create({
       fullname,
       email,
       password,
-      profileImageURL: userProfle
+      profileImageURL: userProfle,
     });
-    return res.redirect("/signin?msg=Account%20created%20successfully%20please%20SignIn");
+    return res.redirect(
+      "/signin?msg=Account%20created%20successfully%20please%20SignIn"
+    );
   });
 
 router.get("/signout", (req, res) => {

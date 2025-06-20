@@ -4,12 +4,13 @@ const User = require("../models/user");
 const router = Router();
 
 router.route("/:id").get(async (req, res) => {
-  const user = await User.findById(req.params.id).populate("blogs");
-  return res.render("profile", {
-    user,
-  });
+  if (req.user) {
+    const user = await User.findById(req.params.id).populate("blogs");
+    return res.render("profile", {
+      user,
+    });
+  }
+  return res.redirect("/signin");
 });
-
-
 
 module.exports = router;

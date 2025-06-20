@@ -1,7 +1,10 @@
 const JWT = require("jsonwebtoken");
-// const { validate } = require("../models/user");
 
-const secret = "somethingThatCanNotBeGuessed";
+const secret = process.env.JWT_SECRET;
+
+if (!secret) {
+    throw new Error("JWT_SECRET environment variable not set");
+}
 
 function createToken(user) {
     const payload = {

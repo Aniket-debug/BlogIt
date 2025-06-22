@@ -1,2 +1,4 @@
 node_modules/
 .env
+\src\public\blogCoverImage/
+\src\public\userProfile/

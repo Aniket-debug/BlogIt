@@ -116,15 +116,34 @@ router
     }
   });
 
-router.post("/:id/comments", async (req, res) => {
-  const blog = await Blog.findById(req.params.id);
-  blog.comments.push({
-    text: req.body.text,
-    createdBy: req.user._id,
-    createdAt: new Date(),
+router
+  .post("/:id/comments", async (req, res) => {
+    const blog = await Blog.findById(req.params.id);
+    blog.comments.push({
+      text: req.body.text,
+      createdBy: req.user._id,
+      createdAt: new Date(),
+    });
+    await blog.save();
+    res.redirect(`/blog/${req.params.id}`);
+  })
+  .delete("/:id/comments/:cid", async (req, res) => {
+    try {
+      const { id, cid } = req.params;
+      const blog = await Blog.findById(id);
+      if (!blog) {
+        return res.status(404).send("Blog not found");
+      }
+
+      // Remove the comment by its id
+      blog.comments.pull(cid);
+      await blog.save();
+
+      res.redirect(`/blog/${id}`);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server Error");
+    }
   });
-  await blog.save();
-  res.redirect(`/blog/${req.params.id}`);
-});
 
 module.exports = router;

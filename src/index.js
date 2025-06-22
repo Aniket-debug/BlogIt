@@ -7,12 +7,12 @@ const { checkForCookie } = require("./middlewares/authentication");
 const homeRoute = require("./routes/home");
 const blogRoute = require("./routes/blog");
 const profileRoute = require("./routes/profile");
-const methodOverride = require('method-override');
+const methodOverride = require("method-override");
 
-
-mongoose.connect(process.env.DB_URL).then((e) => {
-  console.log("mongoDb connected");
-});
+mongoose 
+  .connect(process.env.DB_URL)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log("MongoDB connection error:\n", err));
 
 const PORT = process.env.PORT;
 
@@ -22,7 +22,7 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve("./src/views"));
 
 // middlewares
-app.use(methodOverride('_method'));
+app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(checkForCookie("token"));

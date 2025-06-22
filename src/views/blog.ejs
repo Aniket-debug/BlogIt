@@ -66,7 +66,8 @@
               <% if (blog.comments && blog.comments.length> 0) { %>
                 <div class="list-group mb-4">
                   <% blog.comments.forEach(comment=> { %>
-                    <div class="list-group-item py-2 px-3 d-flex align-items-start">
+                    <div class="list-group-item py-2 px-3 d-flex align-items-start position-relative">
+
                       <!-- Profile Image -->
                       <img src="<%= comment.createdBy?.profileImageURL %>" alt="User image" class="rounded-circle me-3"
                         style="width: 40px; height: 40px; object-fit: cover" />
@@ -81,9 +82,20 @@
                               Date(comment.createdAt).toLocaleDateString() %>
                         </small>
                       </div>
+
+                      <!-- Delete Button: Only visible to comment owner -->
+                      <% if (user && comment.createdBy &&
+                        user._id.toString()===comment.createdBy._id.toString()) { %>
+                        <form action="/blog/<%= blog._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST"
+                          class="position-absolute top-0 end-0 mt-2 me-2">
+                          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                      <% } %>
+
                     </div>
                     <% }) %>
                 </div>
+
                 <% } else { %>
                   <p class="text-muted">
                     No comments yet. Be the first to comment!
@@ -115,17 +127,6 @@
                             <% } %>
             </div>
           </div>
-
-          <% if (user && user._id.toString()===blog.author?._id?.toString()) { %>
-            <div class="mt-4 d-flex justify-content-end gap-2">
-              <a href="/blogs/<%= blog._id %>/edit" class="btn btn-outline-primary">Edit</a>
-              <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST">
-                <button type="submit" class="btn btn-outline-danger">
-                  Delete
-                </button>
-              </form>
-            </div>
-            <% } %>
         </div>
       </div>
     </div>

@@ -22,7 +22,13 @@
             </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="/profile/<%= locals.user._id %>">My Profile</a></li>
-              <li><a class="dropdown-item" href="/signout">Sign Out</a></li>
+              <li>
+                <form id="logout-form" action="/signout" method="POST" style="display: none;"></form>
+                <a class="dropdown-item" href="/"
+                  onclick="document.getElementById('logout-form').submit(); return false;">
+                  Sign Out
+                </a>
+              </li>
             </ul>
           </li>
           <% } else { %>

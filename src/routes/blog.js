@@ -1,7 +1,6 @@
 const { Router } = require("express");
-const Blog = require("../models/blog");
-const User = require("../models/user");
-const multer = require("multer");
+const upload = require("../service/uploadMulter");
+
 
 const { handleBlogPostReq,
   handleBlogDeleteReq,
@@ -10,10 +9,7 @@ const { handleBlogPostReq,
   handleDeleteComment,
   handlePostComment } = require("../controllers/blog");
 
-
 const router = Router();
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 router
   .route("/add-blog")

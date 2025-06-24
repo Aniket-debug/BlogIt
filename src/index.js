@@ -10,7 +10,6 @@ const profileRoute = require("./routes/profile");
 const methodOverride = require("method-override");
 const cloudinary = require('cloudinary').v2;
 
-
 // cloudinary Configuration
 cloudinary.config({
     cloud_name: 'dynnuveus',

@@ -7,8 +7,6 @@ async function handleBlogPostReq(req, res) {
     try {
         const { title, content } = req.body;
 
-        console.log(req.user._id);
-
         let coverImagePath = "/images/blogCoverImage.png"; // default
 
         // Upload image to Cloudinary if provided
@@ -35,15 +33,13 @@ async function handleBlogPostReq(req, res) {
                             createdBy: req.user._id,
                             coverImageURL: coverImagePath,
                         });
+
                         // Add blog to user
-                        console.log(req.user._id);
                         const user = await User.findByIdAndUpdate(
                             req.user._id,
                             { $push: { blogs: blog._id } },
                             { new: true }
                         );
-
-                        console.log(user);
 
                         return res.redirect(`/blog/${blog._id}`);
                     }
